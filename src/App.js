@@ -1,5 +1,6 @@
 import logo from './logo.svg';
 import './App.css';
+import DataBox from './DataBox';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         >
           Learn React
         </a>
+        <DataBox /> {/* Use the DataBox component to display database data */}
       </header>
     </div>
   );
