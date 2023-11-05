@@ -9,43 +9,84 @@ mongoose.connect("mongodb://localhost:27017/myDatabase", {
 });
 
 //Schema
-const base={
-    id: String,
-    name: String,
-    description: String
-};
-const monmodel=mongoose.model("FIRSTCOLLECTION", base);
+const todoSchema = new mongoose.Schema({
+    title: String,
+    description: String,
+    done: Boolean,
+});
+const Todo = mongoose.model("Todo", todoSchema);
 
 //POST
 
-app.post("/createRecord", async(req, res)=>{
-    console.log("inside post function");
+app.post("/createTodo", async (req, res) => {
+    const { title, description } = req.body;
+  
+    const newTodo = new Todo({
+      title,
+      description,
+      done: false, // By default, the task is not completed
+    });
+  
+    try {
+      const savedTodo = await newTodo.save();
+      res.json(savedTodo);
+    } catch (error) {
+      res.status(400).json({ error: "Failed to create a todo task." });
+    }
+  });
 
-    const data=new monmodel({
-        name: req.body.name,
-        id: req.body.id,
-        description: req.body.description
-    })
-    const val=await data.save();
-    console.log("data saved");
-    res.json(val);
-}, (err)=>{
-    console.log("request failed");
-    console.log(err);
-})
+//GET
 
-app.get("/getAll", async(req, res)=>{
-    console.log("inside getAll function");
+app.get("/getAllTodos", async (req, res) => {
+try {
+    const todos = await Todo.find({});
+    res.json(todos);
+} catch (error) {
+    res.status(500).json({ error: "Failed to retrieve todo tasks." });
+}
+});
 
-    const val=await monmodel.find({});
+//PATCH
 
-    console.log("data retrived");
-    res.json(val);
-}, (err)=>{
-    console.log("request failed");
-    console.log(err);
-})
+app.patch("/updateTodo/:id", async (req, res) => {
+    const { id } = req.params;
+    const { done } = req.body;
+  
+    try {
+      const updatedTodo = await Todo.findByIdAndUpdate(
+        id,
+        { done },
+        { new: true }
+      );
+  
+      if (!updatedTodo) {
+        return res.status(404).json({ error: "Todo task not found." });
+      }
+  
+      res.json(updatedTodo);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update todo task." });
+    }
+  });
+  
+//DELETE
 
-app.listen(3001, ()=>{
+app.delete("/deleteTodo/:id", async (req, res) => {
+    const { id } = req.params;
+  
+    try {
+      const deletedTodo = await Todo.findByIdAndRemove(id);
+  
+      if (!deletedTodo) {
+        return res.status(404).json({ error: "Todo task not found." });
+      }
+  
+      res.json(deletedTodo);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to delete todo task." });
+    }
+  });
+  
+  app.listen(3001, ()=>{
     console.log("on port 3001");
 });
