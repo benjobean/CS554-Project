@@ -1,5 +1,6 @@
 import express from 'express';
 import mongoose from 'mongoose';
+import cors from 'cors';
 
 const app=express();
 app.use(express.json());
@@ -8,10 +9,12 @@ mongoose.connect("mongodb://localhost:27017/myDatabase", {
     useUnifiedTopology:true
 });
 
+//CORS
+app.use(cors());
+
 //Schema
 const todoSchema = new mongoose.Schema({
     title: String,
-    description: String,
     done: Boolean,
 });
 const Todo = mongoose.model("Todo", todoSchema);
@@ -19,11 +22,10 @@ const Todo = mongoose.model("Todo", todoSchema);
 //POST
 
 app.post("/createTodo", async (req, res) => {
-    const { title, description } = req.body;
+    const { title } = req.body;
   
     const newTodo = new Todo({
       title,
-      description,
       done: false, // By default, the task is not completed
     });
   

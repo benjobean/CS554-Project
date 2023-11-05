@@ -1,24 +1,24 @@
 // DataBox.js
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
-function DataBox() {
-  const [data, setData] = useState([]);
-
-  useEffect(() => {
-    // Fetch data from your Express API when the component mounts
-    fetch('/getAll')
-      .then((response) => response.json())
-      .then((data) => setData(data))
-      .catch((error) => console.error(error));
-  }, []);
+function DataBox({ todos, onUpdateTodo, onDeleteTodo, onClearCompleted }) {
+  const handleCheckboxChange = (id) => {
+    // Call the onUpdateTodo function when the checkbox is changed
+    onUpdateTodo(id);
+  };
 
   return (
     <div>
-      <h2>Data from Database</h2>
+      <h2>Todo Tasks</h2>
       <ul>
-        {data.map((item) => (
-          <li key={item.id}>
-            <strong>{item.name}</strong>: {item.description}
+        {todos.map((todo) => (
+          <li key={todo._id}>
+            <input
+              type="checkbox"
+              checked={todo.done}
+              onChange={() => handleCheckboxChange(todo._id)}
+            />
+            {todo.title}
           </li>
         ))}
       </ul>
@@ -27,3 +27,5 @@ function DataBox() {
 }
 
 export default DataBox;
+
+
