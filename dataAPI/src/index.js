@@ -88,6 +88,21 @@ app.delete("/deleteTodo/:id", async (req, res) => {
       res.status(500).json({ error: "Failed to delete todo task." });
     }
   });
+
+  // CLEAR COMPLETE
+  app.delete('/clearCompletedTodos', async (req, res) => {
+    try {
+      const result = await Todo.deleteMany({ done: true });
+  
+      if (result.deletedCount > 0) {
+        res.json({ message: 'Completed todos cleared successfully' });
+      } else {
+        res.status(404).json({ error: 'No completed todos found' });
+      }
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to clear completed todos' });
+    }
+  });
   
   app.listen(3001, ()=>{
     console.log("on port 3001");

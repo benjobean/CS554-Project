@@ -68,6 +68,27 @@ function App() {
       .catch((error) => console.error('Error deleting todo:', error));
   };
 
+  // Function to handle clearing completed todos
+  const handleClearCompletedTodos = () => {
+    fetch('http://localhost:3001/clearCompletedTodos', {
+      method: 'DELETE',
+    })
+      .then((response) => {
+        if (response.ok) {
+          // The request was successful, so you can update your todos state
+          return response.json();
+        } else {
+          throw new Error('Failed to clear completed todos');
+        }
+      })
+      .then(() => {
+        // Filter out completed todos from the current state
+        const updatedTodos = todos.filter((todo) => !todo.done);
+        setTodos(updatedTodos);
+      })
+      .catch((error) => console.error('Error clearing completed todos:', error));
+  };
+
   return (
     <div className="App">
       <header className="App-header">
@@ -96,6 +117,7 @@ function App() {
             onChange={(e) => setNewTodo({ ...newTodo, title: e.target.value })}
           />
           <button onClick={handleAddTodo}>Add Todo</button>
+          <button onClick={handleClearCompletedTodos}>Clear Completed</button>
         </div>
       </header>
     </div>
