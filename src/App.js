@@ -6,6 +6,7 @@ import React, { useState, useEffect } from 'react';
 function App() {
   const [todos, setTodos] = useState([]);
   const [newTodo, setNewTodo] = useState({ title: ''});
+  const [currentTime, setCurrentTime] = useState('');
   
   useEffect(() => {
     // Fetch todo tasks from the backend and update the state
@@ -89,6 +90,19 @@ function App() {
       .catch((error) => console.error('Error clearing completed todos:', error));
   };
 
+  // Function to grab time
+  const fetchCurrentTime = () => {
+    fetch('http://localhost:3001/getDateTime')
+    .then((response) => response.json())
+    .then((data) => {
+      console.log('Current Date and Time', data.dateTime);
+      setCurrentTime(data.dateTime);
+    })
+    .catch((error) => {
+      console.error('Error fetching date and time', error);
+    })
+  }
+
   return (
     <div className="App">
       <header className="App-header">
@@ -118,6 +132,8 @@ function App() {
           />
           <button onClick={handleAddTodo}>Add Todo</button>
           <button onClick={handleClearCompletedTodos}>Clear Completed</button>
+          <button onClick={fetchCurrentTime}>Get Current Time</button>
+          {currentTime && <p className="time-output">Current Time: {currentTime}</p>}
         </div>
       </header>
     </div>

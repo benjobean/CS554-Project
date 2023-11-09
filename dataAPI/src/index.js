@@ -103,7 +103,15 @@ app.delete("/deleteTodo/:id", async (req, res) => {
       res.status(500).json({ error: 'Failed to clear completed todos' });
     }
   });
+
+  // Get Time
+  app.get('/getDateTime', (req, res) => {
+    const currentDateTime = new Date();
+    const ctTime = currentDateTime.toLocaleString('en-US', {timeZone: 'America/Chicago'});
+    res.json({dateTime: ctTime});
+  })
   
   app.listen(3001, ()=>{
     console.log("on port 3001");
 });
+
