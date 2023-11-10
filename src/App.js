@@ -92,8 +92,13 @@ function App() {
 
   // Function to grab time
   const fetchCurrentTime = () => {
-    fetch('http://localhost:3001/getDateTime')
-    .then((response) => response.json())
+    fetch('http://localhost:3002/getDateTime')
+    .then((response) => {
+      if(!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.json();
+    })
     .then((data) => {
       console.log('Current Date and Time', data.dateTime);
       setCurrentTime(data.dateTime);
