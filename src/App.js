@@ -7,16 +7,20 @@ function App() {
   const [todos, setTodos] = useState([]);
   const [newTodo, setNewTodo] = useState({ title: '' });
   const [currentTime, setCurrentTime] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Fetch todo tasks from the backend and update the state
     fetch('http://localhost:3001/getAllTodos')
       .then((response) => response.json())
       .then((data) => {
-        console.log(data); // Log the parsed data
         setTodos(data);
+        setLoading(false); // Set loading to false when data is fetched
       })
-      .catch((error) => console.error('Error fetching todos:', error));
+      .catch((error) => {
+        console.error('Error fetching todos:', error);
+        setLoading(false); // Set loading to false in case of an error
+      });
   }, []);
 
   // Function to handle adding a new todo
@@ -49,10 +53,9 @@ function App() {
     })
       .then((response) => response.json())
       .then((data) => {
-        const updatedTodos = todos.map((todo) =>
-          todo._id === id ? data : todo
+        setTodos((prevTodos) =>
+          prevTodos.map((todo) => (todo._id === id ? data : todo))
         );
-        setTodos(updatedTodos);
       })
       .catch((error) => console.error('Error updating todo:', error));
   };
@@ -110,22 +113,13 @@ function App() {
 
   return (
     <div className="App">
-
-      {/* <DataBox
-        todos={todos}
-        onAddTodo={handleAddTodo}
-        onUpdateTodo={handleUpdateTodo}
-        onDeleteTodo={handleDeleteTodo}
-      /> */}
-
       <div>
-        <h1> TODO </h1>
+        <h1>TODO</h1>
         <input
           type="text"
-          placeholder="Title"
+          placeholder="Enter a todo item"
           value={newTodo.title}
           onChange={(e) => setNewTodo({ ...newTodo, title: e.target.value })}
-          // event handler to allow user to press enter to create a task
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               handleAddTodo();
@@ -135,30 +129,40 @@ function App() {
         <button onClick={handleAddTodo}>Add Todo</button>
         <button onClick={handleClearCompletedTodos}>Clear Completed</button>
         <button onClick={fetchCurrentTime}>Get Current Time</button>
-        {currentTime && <p className="time-output">Current Time: {currentTime}</p>}
+        {currentTime && (
+          <p className="time-output">Current Time: {currentTime}</p>
+        )}
       </div>
 
-      <ul className="todo-list">
-        {todos.map((todo) => (
-          <li
-            key={todo._id}
-            className={`todo-item ${todo.done ? 'done' : ''}`}
-          >
-            <input
-              type="checkbox"
-              checked={todo.done}
-              onChange={() => handleUpdateTodo(todo._id)}
-            />
-            <span>{todo.title}</span>
-            <button onClick={() => handleDeleteTodo(todo._id)}>
-              {/* I don't know why this isn't working, but this image will not appear on this button */}
-              <img src={trashcanIcon} height="20px" width="20px" alt="Delete" />
-              {/* 🗑️ */}
-            </button>
-          </li>
-        ))}
-      </ul>
-
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <>
+          <ul className="todo-list">
+            {todos.map((todo) => (
+              <li
+                key={todo._id}
+                className={`todo-item ${todo.done ? 'done' : ''}`}
+              >
+                <input
+                  type="checkbox"
+                  checked={todo.done}
+                  onChange={() => handleUpdateTodo(todo._id)}
+                />
+                <span>{todo.title}</span>
+                <button onClick={() => handleDeleteTodo(todo._id)}>
+                  <img
+                    src={trashcanIcon}
+                    height="20px"
+                    width="20px"
+                    alt="Delete"
+                  />
+                </button>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
     </div>
   );
 }
