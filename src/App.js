@@ -8,6 +8,7 @@ function App() {
   const [newTodo, setNewTodo] = useState({ title: '' });
   const [currentTime, setCurrentTime] = useState('');
   const [loading, setLoading] = useState(true);
+  const [buttonClicked, setButtonClicked] = useState(null);
 
   useEffect(() => {
     // Fetch todo tasks from the backend and update the state
@@ -111,6 +112,30 @@ function App() {
       })
   }
 
+  // Function to handle button click status
+  const handleButtonClick = (buttonName) => {
+    setButtonClicked(buttonName);
+
+    switch (buttonName) {
+      case 'addTodo':
+        handleAddTodo();
+        break;
+      case 'clearCompleted':
+        handleClearCompletedTodos();
+        break;
+      case 'getCurrentTime':
+        fetchCurrentTime();
+        break;
+      default:
+        break;
+    }
+
+    // Reset the buttonClicked state after a short delay
+    setTimeout(() => {
+      setButtonClicked(null);
+    }, 300);
+  };
+
   return (
     <div className="App">
       <div>
@@ -126,9 +151,24 @@ function App() {
             }
           }}
         />
-        <button onClick={handleAddTodo}>Add Todo</button>
-        <button onClick={handleClearCompletedTodos}>Clear Completed</button>
-        <button onClick={fetchCurrentTime}>Get Current Time</button>
+        <button
+          className={buttonClicked === 'addTodo' ? 'button-clicked' : ''}
+          onClick={() => handleButtonClick('addTodo')}
+        >
+          Add Todo
+        </button>
+        <button
+          className={buttonClicked === 'clearCompleted' ? 'button-clicked' : ''}
+          onClick={() => handleButtonClick('clearCompleted')}
+        >
+          Clear Completed
+        </button>
+        <button
+          className={buttonClicked === 'getCurrentTime' ? 'button-clicked' : ''}
+          onClick={() => handleButtonClick('getCurrentTime')}
+        >
+          Get Current Time
+        </button>
         {currentTime && (
           <p className="time-output">Current Time: {currentTime}</p>
         )}
@@ -143,6 +183,7 @@ function App() {
               <li
                 key={todo._id}
                 className={`todo-item ${todo.done ? 'done' : ''}`}
+                style={{ width: '300px', overflowWrap: 'break-word', wordBreak: 'break-all' }}
               >
                 <input
                   type="checkbox"
@@ -150,11 +191,19 @@ function App() {
                   onChange={() => handleUpdateTodo(todo._id)}
                 />
                 <span>{todo.title}</span>
-                <button onClick={() => handleDeleteTodo(todo._id)}>
+                <button onClick={() => handleDeleteTodo(todo._id)}
+                style={{
+                  height: '15px',
+                  width: '15px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+                >
                   <img
                     src={trashcanIcon}
-                    height="20px"
-                    width="20px"
+                    height="10px"
+                    width="10px"
                     alt="Delete"
                   />
                 </button>
