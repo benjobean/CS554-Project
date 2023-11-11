@@ -1,23 +1,23 @@
-import logo from './logo.svg';
+import trashcanIcon from './trashcan.svg';
 import './App.css';
-import DataBox from './DataBox';
+// import DataBox from './DataBox';
 import React, { useState, useEffect } from 'react';
 
 function App() {
   const [todos, setTodos] = useState([]);
-  const [newTodo, setNewTodo] = useState({ title: ''});
+  const [newTodo, setNewTodo] = useState({ title: '' });
   const [currentTime, setCurrentTime] = useState('');
-  
+
   useEffect(() => {
     // Fetch todo tasks from the backend and update the state
     fetch('http://localhost:3001/getAllTodos')
-    .then((response) => response.json())
-    .then((data) => {
-      console.log(data); // Log the parsed data
-      setTodos(data);
-    })
-    .catch((error) => console.error('Error fetching todos:', error));
-}, []);
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data); // Log the parsed data
+        setTodos(data);
+      })
+      .catch((error) => console.error('Error fetching todos:', error));
+  }, []);
 
   // Function to handle adding a new todo
   const handleAddTodo = () => {
@@ -31,7 +31,7 @@ function App() {
       .then((response) => response.json())
       .then((data) => {
         setTodos([...todos, data]);
-        setNewTodo({ title: ''}); // Clear the form inputs
+        setNewTodo({ title: '' }); // Clear the form inputs
       })
       .catch((error) => console.error('Error adding todo:', error));
   };
@@ -93,54 +93,71 @@ function App() {
   // Function to grab time
   const fetchCurrentTime = () => {
     fetch('http://localhost:3002/getDateTime')
-    .then((response) => {
-      if(!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then((data) => {
-      console.log('Current Date and Time', data.dateTime);
-      setCurrentTime(data.dateTime);
-    })
-    .catch((error) => {
-      console.error('Error fetching date and time', error);
-    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log('Current Date and Time', data.dateTime);
+        setCurrentTime(data.dateTime);
+      })
+      .catch((error) => {
+        console.error('Error fetching date and time', error);
+      })
   }
 
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello World.</p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-        <DataBox
-          todos={todos}
-          onAddTodo={handleAddTodo}
-          onUpdateTodo={handleUpdateTodo}
-          onDeleteTodo={handleDeleteTodo}
-          
+
+      {/* <DataBox
+        todos={todos}
+        onAddTodo={handleAddTodo}
+        onUpdateTodo={handleUpdateTodo}
+        onDeleteTodo={handleDeleteTodo}
+      /> */}
+
+      <div>
+        <input
+          type="text"
+          placeholder="Title"
+          value={newTodo.title}
+          onChange={(e) => setNewTodo({ ...newTodo, title: e.target.value })}
+          // event handler to allow user to press enter to create a task
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              handleAddTodo();
+            }
+          }}
         />
-        <div>
-          <input
-            type="text"
-            placeholder="Title"
-            value={newTodo.title}
-            onChange={(e) => setNewTodo({ ...newTodo, title: e.target.value })}
-          />
-          <button onClick={handleAddTodo}>Add Todo</button>
-          <button onClick={handleClearCompletedTodos}>Clear Completed</button>
-          <button onClick={fetchCurrentTime}>Get Current Time</button>
-          {currentTime && <p className="time-output">Current Time: {currentTime}</p>}
-        </div>
-      </header>
+        <button onClick={handleAddTodo}>Add Todo</button>
+        <button onClick={handleClearCompletedTodos}>Clear Completed</button>
+        <button onClick={fetchCurrentTime}>Get Current Time</button>
+        {currentTime && <p className="time-output">Current Time: {currentTime}</p>}
+      </div>
+
+      <ul className="todo-list">
+        {todos.map((todo) => (
+          <li
+            key={todo._id}
+            className={`todo-item ${todo.done ? 'done' : ''}`}
+          >
+            <input
+              type="checkbox"
+              checked={todo.done}
+              onChange={() => handleUpdateTodo(todo._id)}
+            />
+            <span>{todo.title}</span>
+            <button onClick={() => handleDeleteTodo(todo._id)}>
+              {/* I don't know why this isn't working, but this image will not appear on this button */}
+              {/* <img src={trashcanIcon} alt="Delete"/> */}
+              🗑️
+            </button>
+          </li>
+        ))}
+      </ul>
+
     </div>
   );
 }
