@@ -11,10 +11,7 @@ function App() {
     // Fetch todo tasks from the backend and update the state
     fetch('http://localhost:3001/getAllTodos')
     .then((response) => response.json())
-    .then((data) => {
-      console.log(data); // Log the parsed data
-      setTodos(data);
-    })
+    .then((data) => setTodos(data))
     .catch((error) => console.error('Error fetching todos:', error));
 }, []);
 
@@ -75,7 +72,6 @@ function App() {
     })
       .then((response) => {
         if (response.ok) {
-          // The request was successful, so you can update your todos state
           return response.json();
         } else {
           throw new Error('Failed to clear completed todos');
