@@ -119,6 +119,7 @@ function App() {
       /> */}
 
       <div>
+        <h1> TODO </h1>
         <input
           type="text"
           placeholder="Title"
@@ -151,8 +152,8 @@ function App() {
             <span>{todo.title}</span>
             <button onClick={() => handleDeleteTodo(todo._id)}>
               {/* I don't know why this isn't working, but this image will not appear on this button */}
-              {/* <img src={trashcanIcon} alt="Delete"/> */}
-              🗑️
+              <img src={trashcanIcon} height="20px" width="20px" alt="Delete" />
+              {/* 🗑️ */}
             </button>
           </li>
         ))}
