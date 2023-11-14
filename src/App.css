@@ -27,6 +27,14 @@
   border-bottom: 1px solid #ddd;
 }
 
+.todo-item div {
+  display:flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: left;
+  text-align: left;
+}
+
 .todo-item:last-child {
   border-bottom: none;
 }
@@ -67,4 +75,11 @@
   background-color: #007bff;
   color: white;
   border: 1px solid #007bff;
+}
+
+.completion-date {
+  color: black;
+  font-style: italic;
+  font-size: 10px;
+  text-decoration: none;
 }
