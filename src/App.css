@@ -43,7 +43,7 @@
   margin-right: 10px;
 }
 
-.todo-item.done {
+.todo-item.done .todo-title {
   /* Conditional style for completed items */
   color: #888;
   text-decoration: line-through;
@@ -76,6 +76,5 @@
 .completion-date {
   font-style: italic;
   font-size: 10px;
-  /* idk why this isn't overriding the parent style */
-  text-decoration: none;
+  color: #888;
 }
