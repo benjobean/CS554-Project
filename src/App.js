@@ -183,18 +183,27 @@ function App() {
               <li
                 key={todo._id}
                 className={`todo-item ${todo.done ? 'done' : ''}`}
-                style={{ width: '300px', overflowWrap: 'break-word', wordBreak: 'break-all' }}
+                style={{ 
+                  width: '300px', 
+                  overflowWrap: 'break-word'
+                }}
               >
                 <input
                   type="checkbox"
                   checked={todo.done}
                   onChange={() => handleUpdateTodo(todo._id)}
                 />
-                <span>{todo.title}</span>
+                <div className="todo-text-holder" style={{width:'200px'}}>
+                  <span className="todo-title">{todo.title}</span>
+                  {/* <br/> */}
+                  {todo.done && (
+                    <span className="completion-date">Completed {todo.dateCompleted}</span>
+                  )}
+                </div>
                 <button onClick={() => handleDeleteTodo(todo._id)}
                 style={{
-                  height: '15px',
-                  width: '15px',
+                  height: '40px',
+                  width: '40px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -202,8 +211,8 @@ function App() {
                 >
                   <img
                     src={trashcanIcon}
-                    height="10px"
-                    width="10px"
+                    height="15px"
+                    width="15px"
                     alt="Delete"
                   />
                 </button>

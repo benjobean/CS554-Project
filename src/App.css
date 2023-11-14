@@ -22,9 +22,17 @@
 .todo-item {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: stretch;
   padding: 10px;
   border-bottom: 1px solid #ddd;
+}
+
+.todo-item div {
+  display:flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: left;
+  text-align: left;
 }
 
 .todo-item:last-child {
@@ -35,14 +43,10 @@
   margin-right: 10px;
 }
 
-.todo-item.done {
+.todo-item.done .todo-title {
   /* Conditional style for completed items */
   color: #888;
   text-decoration: line-through;
-}
-
-.todo-item span {
-  flex-grow: 1;
 }
 
 .todo-item button {
@@ -67,4 +71,10 @@
   background-color: #007bff;
   color: white;
   border: 1px solid #007bff;
+}
+
+.completion-date {
+  font-style: italic;
+  font-size: 10px;
+  color: #888;
 }
