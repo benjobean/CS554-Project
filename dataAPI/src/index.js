@@ -1,110 +1,148 @@
+// app.js
+
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
+import {
+  createNote,
+  getAllNotes,
+  updateNote,
+  deleteNote,
+} from '../../notes/src/index.js';
+import {
+  createTodo,
+  getAllTodos,
+  updateTodo,
+  deleteTodo,
+  clearCompletedTodos,
+} from '../../todo/src/index.js';
 
-const app=express();
-app.use(express.json());
-mongoose.connect("mongodb://localhost:27017/myDatabase", {
-    useNewUrlParser:true,
-    useUnifiedTopology:true
+const appNote = express(); // Express app for notes
+const appTodo = express(); // Express app for todos
+
+const PORT_TODO = 3001; // Port for todos service
+const PORT_NOTE = 3002; // Port for notes service
+
+appNote.use(express.json());
+mongoose.connect('mongodb://localhost:27017/myDatabase', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+appNote.use(cors());
+
+// Notes Endpoints
+appNote.post('/createNote', async (req, res) => {
+  const { content } = req.body;
+
+  try {
+    const savedNote = await createNote(content);
+    res.json(savedNote);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 });
 
-//CORS
-app.use(cors());
-
-//Schema
-const todoSchema = new mongoose.Schema({
-    title: String,
-    done: Boolean,
+appNote.get('/getAllNotes', async (req, res) => {
+  try {
+    const notes = await getAllNotes();
+    res.json(notes);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
-const Todo = mongoose.model("Todo", todoSchema);
 
-//POST
+appNote.patch('/updateNote/:id', async (req, res) => {
+  const { id } = req.params;
+  const { content } = req.body;
 
-app.post("/createTodo", async (req, res) => {
-    const { title } = req.body;
-  
-    const newTodo = new Todo({
-      title,
-      done: false, // By default, the task is not completed
-    });
-  
-    try {
-      const savedTodo = await newTodo.save();
-      res.json(savedTodo);
-    } catch (error) {
-      res.status(400).json({ error: "Failed to create a todo task." });
-    }
-  });
+  try {
+    const updatedNote = await updateNote(id, content);
+    res.json(updatedNote);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
-//GET
+appNote.delete('/deleteNote/:id', async (req, res) => {
+  const { id } = req.params;
 
-app.get("/getAllTodos", async (req, res) => {
-try {
-    const todos = await Todo.find({});
+  try {
+    const deletedNote = await deleteNote(id);
+    res.json(deletedNote);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+appNote.listen(PORT_NOTE, () => {
+  console.log(`Notes service is running on port ${PORT_NOTE}`);
+});
+
+// Todos Endpoints
+appTodo.use(express.json());
+mongoose.connect('mongodb://localhost:27017/myDatabase', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+appTodo.use(cors());
+
+appTodo.post('/createTodo', async (req, res) => {
+  const { title } = req.body;
+
+  try {
+    const savedTodo = await createTodo(title);
+    res.json(savedTodo);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+appTodo.get('/getAllTodos', async (req, res) => {
+  try {
+    const todos = await getAllTodos();
     res.json(todos);
-} catch (error) {
-    res.status(500).json({ error: "Failed to retrieve todo tasks." });
-}
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
-//PATCH
+appTodo.patch('/updateTodo/:id', async (req, res) => {
+  const { id } = req.params;
+  const { done } = req.body;
 
-app.patch("/updateTodo/:id", async (req, res) => {
-    const { id } = req.params;
-    const { done } = req.body;
-  
-    try {
-      const updatedTodo = await Todo.findByIdAndUpdate(
-        id,
-        { done },
-        { new: true }
-      );
-  
-      if (!updatedTodo) {
-        return res.status(404).json({ error: "Todo task not found." });
-      }
-  
-      res.json(updatedTodo);
-    } catch (error) {
-      res.status(500).json({ error: "Failed to update todo task." });
-    }
-  });
-  
-//DELETE
-
-app.delete("/deleteTodo/:id", async (req, res) => {
-    const { id } = req.params;
-  
-    try {
-      const deletedTodo = await Todo.findByIdAndRemove(id);
-  
-      if (!deletedTodo) {
-        return res.status(404).json({ error: "Todo task not found." });
-      }
-  
-      res.json(deletedTodo);
-    } catch (error) {
-      res.status(500).json({ error: "Failed to delete todo task." });
-    }
-  });
-
-  // CLEAR COMPLETE
-  app.delete('/clearCompletedTodos', async (req, res) => {
-    try {
-      const result = await Todo.deleteMany({ done: true });
-  
-      if (result.deletedCount > 0) {
-        res.json({ message: 'Completed todos cleared successfully' });
-      } else {
-        res.status(404).json({ error: 'No completed todos found' });
-      }
-    } catch (error) {
-      res.status(500).json({ error: 'Failed to clear completed todos' });
-    }
-  });
-  
-  app.listen(3001, ()=>{
-    console.log("on port 3001");
+  try {
+    const updatedTodo = await updateTodo(id, done);
+    res.json(updatedTodo);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
+appTodo.delete('/deleteTodo/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const deletedTodo = await deleteTodo(id);
+    res.json(deletedTodo);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+appTodo.delete('/clearCompletedTodos', async (req, res) => {
+  try {
+    const result = await clearCompletedTodos();
+
+    if (result.deletedCount > 0) {
+      res.json(result);
+    } else {
+      res.status(404).json(result);
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+appTodo.listen(PORT_TODO, () => {
+  console.log(`Todo service is running on port ${PORT_TODO}`);
+});

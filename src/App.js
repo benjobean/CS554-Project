@@ -112,6 +112,35 @@ function App() {
       })
   }
 
+  // Function to handle adding a new note
+  const handleAddNote = () => {
+    fetch('http://localhost:3001/createNote', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(newNote),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setNotes([...notes, data]);
+        setNewNote({ content: '' });
+      })
+      .catch((error) => console.error('Error adding note:', error));
+  };
+
+  // Function to handle deleting a note
+  const handleDeleteNote = (id) => {
+    fetch(`http://localhost:3001/deleteNote/${id}`, {
+      method: 'DELETE',
+    })
+      .then(() => {
+        const updatedNotes = notes.filter((note) => note._id !== id);
+        setNotes(updatedNotes);
+      })
+      .catch((error) => console.error('Error deleting note:', error));
+  };
+  
   // Function to handle button click status
   const handleButtonClick = (buttonName) => {
     setButtonClicked(buttonName);
