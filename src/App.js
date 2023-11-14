@@ -193,17 +193,17 @@ function App() {
                   checked={todo.done}
                   onChange={() => handleUpdateTodo(todo._id)}
                 />
-                <div className="todo-text-holder">
-                  <span>{todo.title}</span>
-                  <br/>
+                <div className="todo-text-holder" style={{width:'200px'}}>
+                  <span className="todo-title">{todo.title}</span>
+                  {/* <br/> */}
                   {todo.done && (
-                    <span className="completion-date">Completed on: {todo.dateCompleted}</span>
+                    <span className="completion-date">Completed {todo.dateCompleted}</span>
                   )}
                 </div>
                 <button onClick={() => handleDeleteTodo(todo._id)}
                 style={{
-                  // height: '20px',
-                  // width: '20px',
+                  height: '40px',
+                  width: '40px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
